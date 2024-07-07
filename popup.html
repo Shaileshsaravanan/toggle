@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Comprehensive API Tester</title>
+        <script src="popup.js"></script>
+        <style>
+            body { width: 600px; padding: 10px; font-family: Arial, sans-serif; }
+            textarea, input[type="text"] { width: 100%; margin-bottom: 10px; }
+            textarea { height: 100px; }
+            .section { margin-bottom: 20px; }
+            #response { white-space: pre-wrap; }
+            .hidden { display: none; }
+        </style>
+    </head>
+    <body>
+        <h2>Comprehensive API Tester</h2>
+        
+        <div class="section">
+            <input type="text" id="url" placeholder="Enter API URL">
+            <select id="method">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="PATCH">PATCH</option>
+            <option value="DELETE">DELETE</option>
+            <option value="HEAD">HEAD</option>
+            <option value="OPTIONS">OPTIONS</option>
+            </select>
+        </div>
+
+        <div class="section">
+            <h3>Headers</h3>
+            <div id="headers">
+            <div>
+                <input type="text" placeholder="Key" class="headerKey">
+                <input type="text" placeholder="Value" class="headerValue">
+            </div>
+            </div>
+            <button id="addHeader">Add Header</button>
+        </div>
+
+        <div class="section">
+            <h3>Authorization</h3>
+            <select id="authType">
+            <option value="none">None</option>
+            <option value="basic">Basic Auth</option>
+            <option value="bearer">Bearer Token</option>
+            </select>
+            <div id="basicAuth" class="hidden">
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            </div>
+            <div id="bearerToken" class="hidden">
+            <input type="text" id="token" placeholder="Bearer Token">
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Request Body</h3>
+            <select id="contentType">
+            <option value="application/json">JSON</option>
+            <option value="application/x-www-form-urlencoded">Form URL Encoded</option>
+            <option value="multipart/form-data">Form Data</option>
+            <option value="text/plain">Plain Text</option>
+            </select>
+            <textarea id="requestBody" placeholder="Enter request body"></textarea>
+        </div>
+
+        <button id="sendRequest">Send Request</button>
+
+        <div class="section">
+            <h3>Response</h3>
+            <div>Status: <span id="status"></span></div>
+            <div>Time: <span id="time"></span> ms</div>
+            <h4>Headers:</h4>
+            <pre id="responseHeaders"></pre>
+            <h4>Body:</h4>
+            <pre id="response"></pre>
+        </div>
+
+        <div class="section">
+            <h3>Saved Requests</h3>
+            <select id="savedRequests"></select>
+            <button id="loadRequest">Load</button>
+            <button id="saveRequest">Save</button>
+            <button id="deleteRequest">Delete</button>
+        </div>
+    </body>
+</html>
