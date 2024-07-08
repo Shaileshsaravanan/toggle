@@ -195,3 +195,37 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
   }
+
+  document.getElementById('startAnalysis').addEventListener('click', startPerformanceAnalysis);
+
+  function startPerformanceAnalysis() {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, {action: "analyzePerformance"}, function(response) {
+        displayPerformanceResults(response);
+      });
+    });
+  }
+
+  function displayPerformanceResults(results) {
+    const metricsElement = document.getElementById('performanceMetrics');
+    const resourcesElement = document.getElementById('slowResources');
+    
+    metricsElement.innerHTML = '';
+    resourcesElement.innerHTML = '';
+
+    // Display performance metrics
+    for (const [key, value] of Object.entries(results.metrics)) {
+      const li = document.createElement('li');
+      li.textContent = `${key}: ${value.toFixed(2)} ms`;
+      metricsElement.appendChild(li);
+    }
+
+    // Display slow resources
+    results.slowResources.forEach(resource => {
+      const li = document.createElement('li');
+      li.textContent = `${resource.name}: ${resource.duration.toFixed(2)} ms`;
+      resourcesElement.appendChild(li);
+    });
+
+    document.getElementById('performanceResults').classList.remove('hidden');
+  }
