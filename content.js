@@ -1,4 +1,8 @@
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request.action === "resizeViewport") {
+        resizeViewport(request.width, request.height);
+      }
+    
     if (request.action === "analyzePerformance") {
       const performanceData = analyzePerformance();
       sendResponse(performanceData);
@@ -30,3 +34,20 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   
     return { metrics, slowResources };
 }
+
+function resizeViewport(width, height) {
+    const viewport = document.querySelector('meta[name="viewport"]');
+    if (viewport) {
+      viewport.content = `width=${width}, height=${height}, initial-scale=1`;
+    } else {
+      const newViewport = document.createElement('meta');
+      newViewport.name = 'viewport';
+      newViewport.content = `width=${width}, height=${height}, initial-scale=1`;
+      document.head.appendChild(newViewport);
+    }
+    
+    // Force reflow
+    document.body.style.width = width + 'px';
+    document.body.style.height = height + 'px';
+    window.dispatchEvent(new Event('resize'));
+  }

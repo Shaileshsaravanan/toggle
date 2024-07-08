@@ -96,5 +96,25 @@
               <ul id="slowResources"></ul>
             </div>
         </div>
+
+        <div id="responsiveTab" class="tab-content hidden">
+            <h3>Responsive Design Tester</h3>
+            <select id="deviceSelect">
+              <option value="custom">Custom</option>
+              <option value="iPhone12">iPhone 12</option>
+              <option value="iPadAir">iPad Air</option>
+              <option value="GalaxyS21">Galaxy S21</option>
+              <option value="Pixel5">Pixel 5</option>
+            </select>
+            <div id="customSize" class="hidden">
+              <input type="number" id="customWidth" placeholder="Width">
+              <input type="number" id="customHeight" placeholder="Height">
+            </div>
+            <button id="applySize">Apply Size</button>
+            <button id="toggleOrientation">Toggle Orientation</button>
+            <div id="currentSize">
+              Current Size: <span id="sizeDisplay"></span>
+            </div>
+        </div>
     </body>
 </html>
