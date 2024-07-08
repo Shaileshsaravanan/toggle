@@ -50,4 +50,26 @@ function resizeViewport(width, height) {
     document.body.style.width = width + 'px';
     document.body.style.height = height + 'px';
     window.dispatchEvent(new Event('resize'));
-  }
+} 
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request.action === "getCode") {
+      if (request.codeType === 'html') {
+        sendResponse({code: document.documentElement.outerHTML});
+      } else if (request.codeType === 'css') {
+        let cssCode = '';
+        for (let i = 0; i < document.styleSheets.length; i++) {
+          try {
+            const rules = document.styleSheets[i].cssRules;
+            for (let j = 0; j < rules.length; j++) {
+              cssCode += rules[j].cssText + '\n';
+            }
+          } catch (e) {
+            console.log('Error accessing stylesheet:', e);
+          }
+        }
+        sendResponse({code: cssCode});
+      }
+    }
+    return true;
+});

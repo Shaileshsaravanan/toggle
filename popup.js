@@ -17,6 +17,8 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('deviceSelect').addEventListener('change', toggleCustomSize);
   document.getElementById('applySize').addEventListener('click', applySize);
   document.getElementById('toggleOrientation').addEventListener('click', toggleOrientation);
+  document.getElementById('validateHTML').addEventListener('click', () => validateCode('html'));
+  document.getElementById('validateCSS').addEventListener('click', () => validateCode('css'));
   loadSavedRequests();
 });
 
@@ -278,4 +280,112 @@ function toggleOrientation() {
 
 function updateSizeDisplay(width, height) {
   document.getElementById('sizeDisplay').textContent = `${width}x${height}`;
+}
+
+function validateCode(type) {
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    chrome.tabs.sendMessage(tabs[0].id, {action: "getCode", codeType: type}, function(response) {
+      if (type === 'html') {
+        displayValidationResults(validateHTML(response.code));
+      } else if (type === 'css') {
+        displayValidationResults(validateCSS(response.code));
+      }
+    });
+  });
+}
+
+function displayValidationResults(results) {
+  const outputElement = document.getElementById('validationOutput');
+  outputElement.innerHTML = '';
+  
+  results.forEach(result => {
+    const resultElement = document.createElement('div');
+    resultElement.classList.add(result.type);
+    resultElement.textContent = `${result.type.toUpperCase()}: Line ${result.line} - ${result.message}`;
+    if (result.suggestion) {
+      const suggestionElement = document.createElement('div');
+      suggestionElement.classList.add('suggestion');
+      suggestionElement.textContent = `Suggestion: ${result.suggestion}`;
+      resultElement.appendChild(suggestionElement);
+    }
+    outputElement.appendChild(resultElement);
+  });
+
+  document.getElementById('validationResults').classList.remove('hidden');
+}
+
+function validateHTML(html) {
+  const results = [];
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  const errors = doc.querySelectorAll('parsererror');
+
+  if (errors.length) {
+    results.push({
+      type: 'error',
+      line: 1, // Basic implementation; actual line numbers would require more complex parsing
+      message: 'Invalid HTML structure',
+      suggestion: 'Check for unclosed tags or improper nesting'
+    });
+  }
+
+  // Basic checks (expand these for more comprehensive validation)
+  if (html.includes('<center>') || html.includes('<font>')) {
+    results.push({
+      type: 'warning',
+      line: 1,
+      message: 'Deprecated HTML tags detected',
+      suggestion: 'Use CSS for styling instead of deprecated HTML tags'
+    });
+  }
+
+  if (!html.toLowerCase().includes('<!doctype html>')) {
+    results.push({
+      type: 'warning',
+      line: 1,
+      message: 'Doctype declaration missing',
+      suggestion: 'Add <!DOCTYPE html> at the beginning of your HTML document'
+    });
+  }
+
+  return results;
+}
+
+function validateCSS(css) {
+  const results = [];
+  const lines = css.split('\n');
+
+  lines.forEach((line, index) => {
+    // Check for !important
+    if (line.includes('!important')) {
+      results.push({
+        type: 'warning',
+        line: index + 1,
+        message: 'Use of !important detected',
+        suggestion: 'Avoid using !important as it breaks the natural cascading of CSS'
+      });
+    }
+
+    // Check for potential box model issues
+    if (line.includes('width') && line.includes('padding') && !line.includes('box-sizing')) {
+      results.push({
+        type: 'warning',
+        line: index + 1,
+        message: 'Potential box model issue detected',
+        suggestion: 'Consider using box-sizing: border-box to include padding in the width'
+      });
+    }
+
+    // Check for browser-specific prefixes
+    if (line.includes('-webkit-') || line.includes('-moz-') || line.includes('-ms-')) {
+      results.push({
+        type: 'info',
+        line: index + 1,
+        message: 'Browser-specific prefix detected',
+        suggestion: 'Consider using a CSS autoprefixer for better cross-browser compatibility'
+      });
+    }
+  });
+
+  return results;
 }
