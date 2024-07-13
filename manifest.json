@@ -1,13 +1,25 @@
 {
   "manifest_version": 3,
-  "name": "toggle",
+  "name": "Toggle",
   "version": "1.0",
-  "description": "",
-  "permissions": ["storage", "activeTab"],
+  "description": "A web developer extension with features for API requests, WebSocket monitoring, and JWT decoding.",
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/toggle-16.png",
+      "48": "icons/toggle-48.png",
+      "128": "icons/toggle-128.png"
+    }
   },
-  "host_permissions": [
-    "*://*/*"
-  ]
+  "permissions": [
+    "webRequest",
+    "webNavigation",
+    "storage",
+    "tabs"
+  ],
+  "icons": {
+    "16": "icons/toggle-16.png",
+    "48": "icons/toggle-48.png",
+    "128": "icons/toggle-128.png"
+  }
 }
