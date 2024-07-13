@@ -29,6 +29,13 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('websockets_btn').addEventListener('click', () => {
       show_websockets_div();
   });
+
+  document.getElementById('websocket-form').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const wsUrl = document.getElementById('ws-url').value;
+      connectWebSocket(wsUrl);
+  });
+  
 });
 
 const active_btn = 'cursor-pointer inline-block p-4 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active';
@@ -49,3 +56,35 @@ function show_websockets_div() {
 }
 
 show_requests_div()
+
+let ws;
+
+function connectWebSocket(url) {
+    if (ws) {
+        ws.close(); 
+    }
+
+    ws = new WebSocket(url);
+
+    ws.addEventListener('open', () => {
+        logWsMessage('WebSocket connection opened');
+    });
+
+    ws.addEventListener('message', (event) => {
+        logWsMessage(`Message received: ${event.data}`);
+    });
+
+    ws.addEventListener('close', () => {
+        logWsMessage('WebSocket connection closed');
+    });
+
+    ws.addEventListener('error', (error) => {
+        logWsMessage(`WebSocket error: ${error.message}`);
+    });
+}
+
+function logWsMessage(message) {
+    document.getElementById('ws-messages').classList.remove('hidden');
+    const log = document.getElementById('ws-message-log');
+    log.textContent += `${new Date().toISOString()}: ${message}\n`;
+}
